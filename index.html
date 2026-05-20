@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>БЗВП Календар НГУ</title>
+  <title>БЗВП НГУ</title>
   <style>
     :root {
       --bg: #10150f; --panel: #1b2418; --text: #f0f4e8; --muted: #bac4ad;
@@ -78,6 +78,13 @@
       .count { font-size: 9px; }
     }
   </style>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b1a0b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="БЗВП НГУ">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
   <main class="app">
@@ -311,5 +318,14 @@
     $('nextBtn').addEventListener('click', () => { state.view.setMonth(state.view.getMonth() + 1); renderCalendar(); });
     renderCalendar();
   </script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').catch(function (err) {
+      console.log('Service Worker registration failed:', err);
+    });
+  });
+}
+</script>
 </body>
 </html>
