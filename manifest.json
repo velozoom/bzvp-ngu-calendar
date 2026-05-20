@@ -1,0 +1,24 @@
+{
+  "name": "БЗВП НГУ",
+  "short_name": "БЗВП НГУ",
+  "description": "Календар БЗВП НГУ: 57 навчальних днів без неділь.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#071307",
+  "theme_color": "#0b1a0b",
+  "orientation": "portrait",
+  "lang": "uk-UA",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
