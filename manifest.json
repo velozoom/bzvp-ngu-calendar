@@ -1,7 +1,7 @@
 {
   "name": "БЗВП НГУ",
   "short_name": "БЗВП НГУ",
-  "description": "Календар БЗВП НГУ з графіком занять.",
+  "description": "Календар БЗВП НГУ з графіком навчання.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
