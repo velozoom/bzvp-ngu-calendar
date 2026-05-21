@@ -4,301 +4,458 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>БЗВП НГУ</title>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b1a0b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
   <style>
     :root {
-      --bg: #10150f; --panel: #1b2418; --text: #f0f4e8; --muted: #bac4ad;
-      --accent: #6f8f3a; --past: #5d6655; --future: #9bae45;
-      --sunday: #3a2a25; --danger: #d0a15d; --border: rgba(255,255,255,.12);
+      --bg: #10150f;
+      --panel: #1b2418;
+      --text: #f0f4e8;
+      --muted: #bac4ad;
+      --accent: #6f8f3a;
+      --past: #5d6655;
+      --future: #9bae45;
+      --sunday: #3a2a25;
+      --danger: #d0a15d;
+      --border: rgba(255,255,255,.12);
     }
+
     * { box-sizing: border-box; }
+
     body {
-      margin: 0; min-height: 100vh;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, rgba(111,143,58,.18), transparent 35%),
-                  linear-gradient(160deg, #0d120c, #172114 55%, #0b0f0a);
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(111,143,58,.18), transparent 35%),
+        linear-gradient(160deg, #0d120c, #172114 55%, #0b0f0a);
       color: var(--text);
     }
-    .app { width: min(980px, 100%); margin: 0 auto; padding: 18px 14px 28px; }
-    header, .controls, .calendar {
-      border: 1px solid var(--border); background: rgba(27,36,24,.9);
-      border-radius: 24px; padding: 16px; box-shadow: 0 12px 32px rgba(0,0,0,.24);
+
+    .app {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      padding: 18px 14px 28px;
     }
-    header { position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(36,50,31,.96), rgba(16,21,15,.94)); }
-    .emblem { position: absolute; right: 10px; top: 8px; width: 150px; height: 150px; opacity: .18; pointer-events: none; }
-    .emblem svg { width: 100%; height: 100%; filter: drop-shadow(0 4px 10px rgba(0,0,0,.35)); }
-    h1 { margin: 0 0 8px; font-size: clamp(28px, 8vw, 44px); line-height: 1; }
-    .subtitle, .note { color: var(--muted); line-height: 1.45; }
-    .subtitle { margin: 0; max-width: 680px; font-size: 15px; }
-    .status { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
-    .card { background: rgba(0,0,0,.18); border: 1px solid var(--border); border-radius: 18px; padding: 12px; min-height: 76px; }
-    .card small { display: block; color: var(--muted); margin-bottom: 5px; font-size: 12px; }
-    .card strong { font-size: 20px; }
-    .controls, .calendar { margin-top: 14px; }
-    label { display: block; color: var(--muted); margin: 0 0 8px; font-size: 14px; }
-    input[type="date"], button {
-      width: 100%; border: 1px solid var(--border); border-radius: 14px;
-      padding: 13px 14px; font: inherit; color: var(--text); background: #10170e; outline: none;
+
+    header, .controls, .calendar, .schedule-note {
+      border: 1px solid var(--border);
+      background: rgba(27,36,24,.9);
+      border-radius: 24px;
+      padding: 16px;
+      box-shadow: 0 12px 32px rgba(0,0,0,.24);
     }
-    button { background: linear-gradient(135deg, var(--accent), #4f682d); font-weight: 800; cursor: pointer; }
-    button.secondary { background: #172014; font-weight: 700; }
-    .control-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 10px; align-items: end; }
-    .monthbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
-    .monthbar h2 { margin: 0; text-transform: capitalize; font-size: 22px; text-align: center; flex: 1; }
-    .monthbar button { width: 54px; padding: 11px 0; border-radius: 16px; }
-    .weekdays, .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-    .weekdays div { text-align: center; color: var(--muted); font-size: 12px; padding: 6px 0; }
+
+    header {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(36,50,31,.96), rgba(16,21,15,.94));
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 8vw, 44px);
+      line-height: 1;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .status {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .card {
+      background: rgba(0,0,0,.18);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 12px;
+    }
+
+    .controls, .calendar, .schedule-note {
+      margin-top: 14px;
+    }
+
+    input, button, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 13px 14px;
+      font: inherit;
+      color: var(--text);
+      background: #10170e;
+    }
+
+    button {
+      background: linear-gradient(135deg, var(--accent), #4f682d);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .monthbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .weekdays, .days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+
     .day {
-      aspect-ratio: 1 / 1; border-radius: 16px; border: 1px solid var(--border);
-      background: rgba(255,255,255,.035); padding: 7px; display: flex;
-      flex-direction: column; justify-content: space-between; position: relative; min-width: 0;
+      aspect-ratio: 1/1;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 7px;
+      position: relative;
+      cursor: pointer;
     }
-    .day.empty { opacity: 0; }
-    .day.sunday { background: rgba(92,54,41,.35); color: #d6b2a2; }
+
+    .day.sunday { background: rgba(92,54,41,.35); }
     .day.today { outline: 2px solid var(--danger); }
     .day.past-training { background: linear-gradient(145deg, var(--past), #3f4938); }
-    .day.future-training { background: linear-gradient(145deg, var(--future), #637c34); color: #10150f; font-weight: 800; }
-    .day.start::after, .day.finish::after {
-      content: attr(data-badge); position: absolute; right: 5px; bottom: 5px;
-      font-size: 9px; padding: 2px 5px; border-radius: 999px; background: rgba(0,0,0,.42); color: white;
+    .day.future-training {
+      background: linear-gradient(145deg, var(--future), #637c34);
+      color: #10150f;
+      font-weight: 800;
     }
-    .num { font-size: 15px; } .count { font-size: 11px; opacity: .9; }
-    .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; color: var(--muted); font-size: 12px; }
-    .pill { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 999px; padding: 6px 9px; background: rgba(0,0,0,.16); }
-    .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--future); }
-    .dot.past { background: var(--past); } .dot.sun { background: var(--sunday); } .dot.today { background: var(--danger); }
-    .note { margin: 12px 0 0; font-size: 13px; }
+
+    .day.has-note::after {
+      content: "";
+      position: absolute;
+      right: 6px;
+      top: 6px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #d0a15d;
+    }
+
+    .note-box {
+      white-space: pre-wrap;
+      line-height: 1.45;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(0,0,0,.18);
+      padding: 14px;
+      min-height: 70px;
+    }
+
+    .editor-panel {
+      display: none;
+      margin-top: 12px;
+      gap: 10px;
+    }
+
+    .editor-panel.open {
+      display: grid;
+    }
+
+    details {
+      margin-top: 14px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    summary {
+      padding: 14px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .lesson-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
 
     .developer-footer {
-      text-align: center; color: var(--muted); opacity: .55;
-      font-size: 12px; padding: 18px 8px 4px; letter-spacing: .2px;
+      text-align: center;
+      color: var(--muted);
+      opacity: .55;
+      font-size: 12px;
+      padding: 18px 8px 4px;
     }
-    @media (max-width: 720px) {
-      .status, .control-grid { grid-template-columns: 1fr; }
-      .day { border-radius: 11px; padding: 5px; }
-      .count { font-size: 9px; }
-    }
-  
-    .day { cursor: pointer; }
-    .day.has-note::before {
-      content: ""; position: absolute; top: 6px; right: 6px;
-      width: 9px; height: 9px; border-radius: 50%; background: #d0a15d;
-      box-shadow: 0 0 0 2px rgba(0,0,0,.22);
-    }
-    .schedule-note {
-      margin-top: 14px; border: 1px solid var(--border); background: rgba(27,36,24,.9);
-      border-radius: 24px; padding: 16px; box-shadow: 0 12px 32px rgba(0,0,0,.24);
-    }
-    .schedule-note h2 { margin: 0 0 8px; font-size: 28px; line-height: 1.1; }
-    .schedule-note .date-line { color: #d0a15d; font-weight: 800; margin-bottom: 12px; text-transform: lowercase; }
-    .schedule-note .note-box { white-space: pre-wrap; line-height: 1.45; border: 1px solid var(--border); border-radius: 18px; background: rgba(0,0,0,.18); padding: 14px; min-height: 62px; color: var(--text); }
-    details.lesson-times { margin-top: 14px; border: 1px solid var(--border); background: rgba(0,0,0,.16); border-radius: 20px; overflow: hidden; }
-    details.lesson-times summary { list-style: none; cursor: pointer; padding: 14px 16px; font-weight: 900; color: var(--text); display: flex; align-items: center; justify-content: space-between; }
-    details.lesson-times summary::-webkit-details-marker { display: none; }
-    details.lesson-times summary::after { content: "⌄"; color: #d0a15d; font-size: 22px; line-height: 1; transition: transform .18s ease; }
-    details.lesson-times[open] summary::after { transform: rotate(180deg); }
-    .lesson-table { padding: 0 14px 14px; display: grid; gap: 6px; }
-    .lesson-row, .lunch-row { display: grid; grid-template-columns: 70px 1fr; gap: 10px; align-items: center; border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 10px 12px; background: rgba(255,255,255,.035); }
-    .lesson-num { color: #d0a15d; font-weight: 900; font-size: 18px; }
-    .lesson-time { font-weight: 800; letter-spacing: .4px; }
-    .lunch-row { grid-template-columns: 1fr; text-align: center; color: #d0a15d; font-weight: 900; background: rgba(208,161,93,.10); }
-
   </style>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0b1a0b">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="БЗВП НГУ">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
-  <main class="app">
-    <header>
-      <div class="emblem" aria-hidden="true">
-        <svg viewBox="0 0 220 220" role="img" aria-label="Герб України у стилі НГУ з пікселем Хижак">
-          <defs>
-            <linearGradient id="nguGold" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#f7e39a"/>
-              <stop offset="0.52" stop-color="#d0a33e"/>
-              <stop offset="1" stop-color="#8f6422"/>
-            </linearGradient>
-            <linearGradient id="oliveMetal" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#6c7b39"/>
-              <stop offset="1" stop-color="#121b10"/>
-            </linearGradient>
-            <clipPath id="shieldClip">
-              <path d="M110 10 L190 42 L178 132 C170 164 145 190 110 210 C75 190 50 164 42 132 L30 42 Z"/>
-            </clipPath>
-            <clipPath id="tryzubClip">
-              <path d="M110 25
-                       L122 58 L120 86
-                       C134 73 145 62 159 48
-                       L171 64 C157 85 146 106 145 132
-                       C133 121 122 117 116 126
-                       L129 167 L110 156 L91 167 L104 126
-                       C98 117 87 121 75 132
-                       C74 106 63 85 49 64
-                       L61 48 C75 62 86 73 100 86
-                       L98 58 Z
-                       M110 48
-                       C104 72 104 106 110 134
-                       C116 106 116 72 110 48 Z"/>
-            </clipPath>
-          </defs>
 
-          <!-- Щит НГУ -->
-          <path d="M110 10 L190 42 L178 132 C170 164 145 190 110 210 C75 190 50 164 42 132 L30 42 Z"
-                fill="rgba(10,15,9,.35)" stroke="#b9913d" stroke-width="8"/>
-          <path d="M110 24 L176 50 L166 126 C159 153 138 174 110 192 C82 174 61 153 54 126 L44 50 Z"
-                fill="url(#oliveMetal)" stroke="rgba(242,215,125,.66)" stroke-width="3"/>
+<main class="app">
 
-          <!-- Піксельний камуфляж 'Хижак' у формі щита -->
-          <g clip-path="url(#shieldClip)" opacity=".75">
-            <rect x="34" y="38" width="152" height="162" fill="#24321e"/>
-            <rect x="44" y="50" width="16" height="16" fill="#5c6e35"/>
-            <rect x="60" y="66" width="16" height="16" fill="#182315"/>
-            <rect x="76" y="50" width="16" height="16" fill="#78883f"/>
-            <rect x="92" y="66" width="16" height="16" fill="#3a4926"/>
-            <rect x="108" y="50" width="16" height="16" fill="#89984a"/>
-            <rect x="124" y="66" width="16" height="16" fill="#1d2918"/>
-            <rect x="140" y="50" width="16" height="16" fill="#60733a"/>
-            <rect x="156" y="66" width="16" height="16" fill="#2e3d21"/>
-            <rect x="50" y="94" width="18" height="18" fill="#1b2617"/>
-            <rect x="68" y="112" width="18" height="18" fill="#74833f"/>
-            <rect x="86" y="94" width="18" height="18" fill="#4f6030"/>
-            <rect x="104" y="112" width="18" height="18" fill="#14200f"/>
-            <rect x="122" y="94" width="18" height="18" fill="#7e8d44"/>
-            <rect x="140" y="112" width="18" height="18" fill="#354520"/>
-            <rect x="158" y="94" width="18" height="18" fill="#596b34"/>
-            <rect x="64" y="144" width="16" height="16" fill="#5b6d34"/>
-            <rect x="80" y="160" width="16" height="16" fill="#1c2718"/>
-            <rect x="96" y="144" width="16" height="16" fill="#84934a"/>
-            <rect x="112" y="160" width="16" height="16" fill="#4a5a2b"/>
-            <rect x="128" y="144" width="16" height="16" fill="#202d19"/>
-            <rect x="144" y="160" width="16" height="16" fill="#68793b"/>
-          </g>
+<header>
+  <h1>БЗВП НГУ</h1>
+  <p class="subtitle">
+    Календар підготовки: 57 навчальних днів без урахування неділь.
+    Графік навчання можна редагувати прямо на сторінці.
+  </p>
+</header>
 
-          <!-- Чіткий тризуб України -->
-          <g clip-path="url(#tryzubClip)">
-            <path d="M110 25
-                     L122 58 L120 86
-                     C134 73 145 62 159 48
-                     L171 64 C157 85 146 106 145 132
-                     C133 121 122 117 116 126
-                     L129 167 L110 156 L91 167 L104 126
-                     C98 117 87 121 75 132
-                     C74 106 63 85 49 64
-                     L61 48 C75 62 86 73 100 86
-                     L98 58 Z
-                     M110 48
-                     C104 72 104 106 110 134
-                     C116 106 116 72 110 48 Z"
-                  fill="url(#nguGold)"/>
-            <rect x="52" y="50" width="14" height="14" fill="#f6e49b" opacity=".26"/>
-            <rect x="80" y="76" width="14" height="14" fill="#9b6c26" opacity=".34"/>
-            <rect x="108" y="42" width="14" height="14" fill="#f9eaa9" opacity=".28"/>
-            <rect x="136" y="76" width="14" height="14" fill="#8b6122" opacity=".34"/>
-            <rect x="152" y="102" width="14" height="14" fill="#e0b64b" opacity=".22"/>
-            <rect x="94" y="132" width="14" height="14" fill="#f7df88" opacity=".24"/>
-          </g>
-          <path d="M110 25
-                   L122 58 L120 86
-                   C134 73 145 62 159 48
-                   L171 64 C157 85 146 106 145 132
-                   C133 121 122 117 116 126
-                   L129 167 L110 156 L91 167 L104 126
-                   C98 117 87 121 75 132
-                   C74 106 63 85 49 64
-                   L61 48 C75 62 86 73 100 86
-                   L98 58 Z"
-                fill="none" stroke="#f8e59b" stroke-width="4" stroke-linejoin="round" opacity=".95"/>
-          <path d="M110 48 C104 72 104 106 110 134 C116 106 116 72 110 48 Z"
-                fill="none" stroke="#fff0ad" stroke-width="3" opacity=".9"/>
-        </svg>
-      </div>
-      <h1>БЗВП НГУ</h1>
-      <p class="subtitle">Календар підготовки: 57 навчальних днів від дати старту без урахування неділь. Минулі й майбутні дні підсвічуються окремо.</p>
-    </header>
+<section class="controls">
+  <label>Оберіть дату початку БЗВП</label>
+  <input id="startDate" type="date">
+</section>
 
-    <section class="controls">
-      <div class="control-grid">
-        <div>
-          <label for="startDate">Оберіть дату початку БЗВП</label>
-          <input id="startDate" type="date" />
-        </div>
-        <button id="saveBtn">Зберегти дату</button>
-      </div>
-    </section>
+<section class="status controls">
+  <div class="card"><small>Дата старту</small><strong id="startText">—</strong></div>
+  <div class="card"><small>Дата завершення</small><strong id="finishText">—</strong></div>
+  <div class="card"><small>Залишилось</small><strong id="leftText">—</strong></div>
+</section>
 
-    <section class="status controls">
-      <div class="card"><small>Дата старту</small><strong id="startText">—</strong></div>
-      <div class="card"><small>Дата завершення</small><strong id="finishText">—</strong></div>
-      <div class="card"><small>Залишилось</small><strong id="leftText">—</strong></div>
-    </section>
+<section class="calendar">
+  <div class="monthbar">
+    <button id="prevBtn">‹</button>
+    <h2 id="monthTitle">—</h2>
+    <button id="nextBtn">›</button>
+  </div>
 
-    <section class="calendar">
-      <div class="monthbar">
-        <button class="secondary" id="prevBtn">‹</button>
-        <h2 id="monthTitle">—</h2>
-        <button class="secondary" id="nextBtn">›</button>
-      </div>
-      <div class="weekdays"><div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Нд</div></div>
-      <div class="days" id="days"></div>
-      <div class="legend">
-        <span class="pill"><span class="dot past"></span>Минулі дні БЗВП</span>
-        <span class="pill"><span class="dot"></span>Наступні дні БЗВП</span>
-        <span class="pill"><span class="dot sun"></span>Неділі не рахуються</span>
-        <span class="pill"><span class="dot today"></span>Сьогодні</span>
-      </div>
-    </section>
+  <div class="weekdays">
+    <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Нд</div>
+  </div>
 
+  <div class="days" id="days"></div>
+</section>
 
-    <section class="schedule-note" id="scheduleNote">
-      <h2>Графік навчання</h2>
-      <div class="date-line" id="noteDate">Оберіть дату</div>
-      <div class="note-box" id="noteText">Натисніть на день у календарі, щоб відкрити нотатку.</div>
-      <details class="lesson-times">
-        <summary>Розклад занять</summary>
-        <div class="lesson-table">
-          <div class="lesson-row"><div class="lesson-num">1.</div><div class="lesson-time">8.50 – 9.35</div></div>
-          <div class="lesson-row"><div class="lesson-num">2.</div><div class="lesson-time">9.45 – 10.30</div></div>
-          <div class="lesson-row"><div class="lesson-num">3.</div><div class="lesson-time">10.40 – 11.25</div></div>
-          <div class="lesson-row"><div class="lesson-num">4.</div><div class="lesson-time">11.35 – 12.20</div></div>
-          <div class="lesson-row"><div class="lesson-num">5.</div><div class="lesson-time">12.30 – 13.15</div></div>
-          <div class="lunch-row">ОБІД</div>
-          <div class="lesson-row"><div class="lesson-num">6.</div><div class="lesson-time">14.35 – 15.20</div></div>
-          <div class="lesson-row"><div class="lesson-num">7.</div><div class="lesson-time">15.30 – 16.15</div></div>
-          <div class="lesson-row"><div class="lesson-num">8.</div><div class="lesson-time">16.25 – 17.10</div></div>
-          <div class="lesson-row"><div class="lesson-num">9.</div><div class="lesson-time">17.20 – 18.05</div></div>
-          <div class="lesson-row"><div class="lesson-num">10.</div><div class="lesson-time">18.15 – 19.00</div></div>
-        </div>
-      </details>
-    </section>
+<section class="schedule-note">
+  <h2>Графік навчання</h2>
 
-    <div class="developer-footer">Developed by Ihor Paderin</div>
-  </main>
+  <div id="noteDate">Оберіть дату</div>
 
-  <script>
-    const DAYS_REQUIRED = 57;
-    const $ = (id) => document.getElementById(id);
-    const state = { view: new Date(new Date().getFullYear(), new Date().getMonth(), 1), start: localStorage.getItem('bzvpStart') || '2026-05-06', selected: '' };
-    let schedule = {};
-    $('startDate').value = state.start;
-    function toISO(date) { return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`; }
-    function fromISO(iso) { if (!iso) return null; const [y,m,d] = iso.split('-').map(Number); return new Date(y, m - 1, d); }
-    function sameDay(a,b) { return a && b && toISO(a) === toISO(b); }
-    function isSunday(date) { return date.getDay() === 0; }
-    function formatDate(date) { return date ? new Intl.DateTimeFormat('uk-UA', { day:'2-digit', month:'2-digit', year:'numeric' }).format(date) : '—'; }
-    function formatLongDate(date) { return new Intl.DateTimeFormat('uk-UA', { weekday:'long', day:'2-digit', month:'long', year:'numeric' }).format(date); }
-    function buildTrainingDays(start) { if (!start) return []; const result = [], current = new Date(start); while (result.length < DAYS_REQUIRED) { if (!isSunday(current)) result.push(new Date(current)); current.setDate(current.getDate() + 1); } return result; }
-    function getPlan() { const start = fromISO(state.start); const days = buildTrainingDays(start); return { start, days, finish: days.length ? days[days.length - 1] : null }; }
-    function updateStatus() { const { start, days, finish } = getPlan(); const today = new Date(); today.setHours(0,0,0,0); let completed = 0; for (const d of days) { const copy = new Date(d); copy.setHours(0,0,0,0); if (copy < today) completed++; } const left = days.length ? Math.max(0, DAYS_REQUIRED - completed) : null; $('startText').textContent = formatDate(start); $('finishText').textContent = formatDate(finish); $('leftText').textContent = left === null ? '—' : `${left} дн.`; }
-    function openNote(iso) { state.selected = iso; const d = fromISO(iso); $('noteDate').textContent = formatLongDate(d); $('noteText').textContent = schedule[iso] || 'Графік на цей день ще не додано.'; renderCalendar(false); $('scheduleNote').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
-    function renderCalendar() { const box = $('days'); box.innerHTML = ''; const { start, days, finish } = getPlan(); const trainingSet = new Map(days.map((d, i) => [toISO(d), i + 1])); const today = new Date(); today.setHours(0,0,0,0); const year = state.view.getFullYear(), month = state.view.getMonth(); $('monthTitle').textContent = new Intl.DateTimeFormat('uk-UA', { month:'long', year:'numeric' }).format(state.view); const first = new Date(year, month, 1); const last = new Date(year, month + 1, 0); const mondayOffset = (first.getDay() + 6) % 7; for (let i = 0; i < mondayOffset; i++) { const empty = document.createElement('div'); empty.className = 'day empty'; box.appendChild(empty); } for (let dayNum = 1; dayNum <= last.getDate(); dayNum++) { const date = new Date(year, month, dayNum); date.setHours(0,0,0,0); const iso = toISO(date); const cell = document.createElement('button'); cell.type = 'button'; cell.className = 'day'; if (isSunday(date)) cell.classList.add('sunday'); if (sameDay(date, today) || state.selected === iso) cell.classList.add('today'); if (schedule[iso]) cell.classList.add('has-note'); if (trainingSet.has(iso)) { if (date < today) cell.classList.add('past-training'); else cell.classList.add('future-training'); } if (start && sameDay(date, start)) { cell.classList.add('start'); cell.dataset.badge = 'СТАРТ'; } if (finish && sameDay(date, finish)) { cell.classList.add('finish'); cell.dataset.badge = 'ФІНІШ'; } cell.innerHTML = `<span class="num">${dayNum}</span>${trainingSet.has(iso) ? `<span class="count">день ${trainingSet.get(iso)}/${DAYS_REQUIRED}</span>` : '<span class="count"></span>'}`; cell.addEventListener('click', () => openNote(iso)); box.appendChild(cell); } updateStatus(); }
-    function saveStartDate() { state.start = $('startDate').value || '2026-05-06'; localStorage.setItem('bzvpStart', state.start); renderCalendar(); }
-    async function loadSchedule() { try { const res = await fetch(`schedule.json?v=${Date.now()}`, { cache: 'no-store' }); if (res.ok) schedule = await res.json(); } catch (e) { schedule = {}; } }
-    $('saveBtn').addEventListener('click', saveStartDate); $('startDate').addEventListener('change', saveStartDate); $('prevBtn').addEventListener('click', () => { state.view.setMonth(state.view.getMonth() - 1); renderCalendar(); }); $('nextBtn').addEventListener('click', () => { state.view.setMonth(state.view.getMonth() + 1); renderCalendar(); }); if (!localStorage.getItem('bzvpStart')) localStorage.setItem('bzvpStart', state.start); loadSchedule().then(renderCalendar);
-    if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('./sw.js').catch(function (err) { console.log('Service Worker registration failed:', err); }); }); }
-  </script>
+  <div class="note-box" id="noteText">
+    Натисніть на день у календарі.
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
+    <button id="editBtn">Редагувати графік</button>
+    <button id="refreshBtn">Оновити</button>
+  </div>
+
+  <div class="editor-panel" id="editorPanel">
+    <textarea id="noteEditor" placeholder="Введіть графік..."></textarea>
+    <button id="saveNoteBtn">Зберегти для всіх</button>
+  </div>
+
+  <details>
+    <summary>Розклад занять</summary>
+
+    <div class="lesson-row"><span>1.</span><span>8:50 – 9:35</span></div>
+    <div class="lesson-row"><span>2.</span><span>9:45 – 10:30</span></div>
+    <div class="lesson-row"><span>3.</span><span>10:40 – 11:25</span></div>
+    <div class="lesson-row"><span>4.</span><span>11:35 – 12:20</span></div>
+    <div class="lesson-row"><span>5.</span><span>12:30 – 13:15</span></div>
+    <div class="lesson-row"><strong>ОБІД</strong></div>
+    <div class="lesson-row"><span>6.</span><span>14:35 – 15:20</span></div>
+    <div class="lesson-row"><span>7.</span><span>15:30 – 16:15</span></div>
+    <div class="lesson-row"><span>8.</span><span>16:25 – 17:10</span></div>
+    <div class="lesson-row"><span>9.</span><span>17:20 – 18:05</span></div>
+    <div class="lesson-row"><span>10.</span><span>18:15 – 19:00</span></div>
+  </details>
+</section>
+
+<div class="developer-footer">Developed by Ihor Paderin</div>
+
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  doc,
+  onSnapshot,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD5GOWOoYKl6gpPd25mPN3-UpnHxc_B0-s",
+  authDomain: "bzvp-ngu-calendar.firebaseapp.com",
+  projectId: "bzvp-ngu-calendar",
+  storageBucket: "bzvp-ngu-calendar.firebasestorage.app",
+  messagingSenderId: "220891107970",
+  appId: "1:220891107970:web:22fd1febd57395425a5a9b"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// PIN не лежить відкритим текстом
+const _h = 1549442;
+const _ok = (v) => {
+  let h = 7;
+  v = String(v || "").trim();
+  for (let i = 0; i < v.length; i++) {
+    h = (h * 31 + v.charCodeAt(i)) >>> 0;
+  }
+  return h === _h;
+};
+
+const DAYS_REQUIRED = 57;
+const $ = (id) => document.getElementById(id);
+
+const state = {
+  view: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+  start: localStorage.getItem('bzvpStart') || '2026-05-06',
+  selected: '',
+  admin: localStorage.getItem('bzvpAdmin') === 'true'
+};
+
+let notes = {};
+
+$('startDate').value = state.start;
+
+function toISO(date) {
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+}
+
+function fromISO(iso) {
+  const [y,m,d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function isSunday(date) {
+  return date.getDay() === 0;
+}
+
+function buildTrainingDays(start) {
+  const result = [];
+  const current = new Date(start);
+
+  while (result.length < DAYS_REQUIRED) {
+    if (!isSunday(current)) result.push(new Date(current));
+    current.setDate(current.getDate() + 1);
+  }
+
+  return result;
+}
+
+function renderCalendar() {
+  const box = $('days');
+  box.innerHTML = '';
+
+  const start = fromISO(state.start);
+  const days = buildTrainingDays(start);
+
+  const trainingSet = new Map(days.map((d, i) => [toISO(d), i + 1]));
+
+  const year = state.view.getFullYear();
+  const month = state.view.getMonth();
+
+  $('monthTitle').textContent = new Intl.DateTimeFormat('uk-UA', {
+    month: 'long',
+    year: 'numeric'
+  }).format(state.view);
+
+  const first = new Date(year, month, 1);
+  const last = new Date(year, month + 1, 0);
+
+  const offset = (first.getDay() + 6) % 7;
+
+  for (let i = 0; i < offset; i++) {
+    const empty = document.createElement('div');
+    empty.className = 'day';
+    empty.style.opacity = 0;
+    box.appendChild(empty);
+  }
+
+  for (let d = 1; d <= last.getDate(); d++) {
+    const date = new Date(year, month, d);
+    const iso = toISO(date);
+
+    const cell = document.createElement('div');
+    cell.className = 'day';
+
+    if (notes[iso]) cell.classList.add('has-note');
+
+    if (trainingSet.has(iso)) {
+      cell.classList.add('future-training');
+    }
+
+    if (isSunday(date)) {
+      cell.classList.add('sunday');
+    }
+
+    cell.innerHTML = `<div>${d}</div>`;
+
+    cell.addEventListener('click', () => {
+      state.selected = iso;
+
+      $('noteDate').textContent = iso;
+      $('noteText').textContent = notes[iso] || 'Немає запису';
+      $('noteEditor').value = notes[iso] || '';
+    });
+
+    box.appendChild(cell);
+  }
+}
+
+onSnapshot(collection(db, 'schedule'), (snap) => {
+  notes = {};
+
+  snap.forEach((docItem) => {
+    notes[docItem.id] = docItem.data().text || '';
+  });
+
+  renderCalendar();
+});
+
+$('editBtn').addEventListener('click', () => {
+  if (!state.admin) {
+    const pin = prompt('Введіть PIN');
+
+    if (!_ok(pin)) {
+      alert('Невірний PIN');
+      return;
+    }
+
+    state.admin = true;
+    localStorage.setItem('bzvpAdmin', 'true');
+  }
+
+  $('editorPanel').classList.toggle('open');
+});
+
+$('saveNoteBtn').addEventListener('click', async () => {
+  if (!state.selected) {
+    alert('Оберіть дату');
+    return;
+  }
+
+  await setDoc(doc(db, 'schedule', state.selected), {
+    text: $('noteEditor').value,
+    updatedAt: serverTimestamp()
+  });
+});
+
+$('prevBtn').addEventListener('click', () => {
+  state.view.setMonth(state.view.getMonth() - 1);
+  renderCalendar();
+});
+
+$('nextBtn').addEventListener('click', () => {
+  state.view.setMonth(state.view.getMonth() + 1);
+  renderCalendar();
+});
+
+$('refreshBtn').addEventListener('click', () => {
+  location.reload();
+});
+
+renderCalendar();
+</script>
+
 </body>
 </html>
