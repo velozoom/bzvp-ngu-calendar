@@ -1,24 +1,12 @@
 {
   "name": "БЗВП НГУ",
   "short_name": "БЗВП НГУ",
-  "description": "Календар БЗВП НГУ з графіком навчання.",
+  "description": "Календар БЗВП НГУ з Firebase-графіком.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#10150f",
   "theme_color": "#0b1a0b",
   "orientation": "portrait",
-  "lang": "uk-UA",
-  "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+  "lang": "uk-UA"
 }

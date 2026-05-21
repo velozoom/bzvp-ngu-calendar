@@ -68,28 +68,6 @@
     .dot.past { background: var(--past); } .dot.sun { background: var(--sunday); } .dot.today { background: var(--danger); }
     .note { margin: 12px 0 0; font-size: 13px; }
 
-
-    .day { cursor: pointer; text-align: left; }
-    .day.has-note::before {
-      content: ""; position: absolute; right: 7px; top: 7px;
-      width: 8px; height: 8px; border-radius: 50%; background: var(--danger);
-      box-shadow: 0 0 0 2px rgba(0,0,0,.25);
-    }
-    .day.selected { outline: 2px solid #f7e39a; outline-offset: 2px; }
-    .schedule-card {
-      border: 1px solid var(--border); background: rgba(27,36,24,.9);
-      border-radius: 24px; padding: 16px; margin-top: 14px;
-      box-shadow: 0 12px 32px rgba(0,0,0,.24);
-    }
-    .schedule-card h2 { margin: 0 0 8px; font-size: 22px; }
-    .schedule-date { color: var(--danger); font-weight: 800; margin-bottom: 8px; }
-    .schedule-text {
-      white-space: pre-wrap; line-height: 1.5; color: var(--text);
-      border: 1px solid var(--border); border-radius: 16px;
-      background: rgba(0,0,0,.18); padding: 13px; min-height: 70px;
-    }
-    .schedule-hint { color: var(--muted); font-size: 12px; line-height: 1.45; margin-top: 10px; }
-
     .developer-footer {
       text-align: center; color: var(--muted); opacity: .55;
       font-size: 12px; padding: 18px 8px 4px; letter-spacing: .2px;
@@ -99,6 +77,73 @@
       .day { border-radius: 11px; padding: 5px; }
       .count { font-size: 9px; }
     }
+
+    .day { cursor: pointer; }
+    .day.has-note::before {
+      content: "";
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--danger);
+      box-shadow: 0 0 0 2px rgba(0,0,0,.28);
+      z-index: 2;
+    }
+    .day.selected-day { outline: 2px solid var(--danger); outline-offset: 2px; }
+    .schedule-note {
+      border: 1px solid var(--border);
+      background: rgba(27,36,24,.9);
+      border-radius: 24px;
+      padding: 16px;
+      box-shadow: 0 12px 32px rgba(0,0,0,.24);
+      margin-top: 14px;
+    }
+    .schedule-note h2 { margin: 0 0 8px; font-size: 28px; line-height: 1.1; }
+    .schedule-date { color: var(--danger); font-weight: 800; margin: 0 0 12px; text-transform: lowercase; }
+    .note-box {
+      white-space: pre-wrap;
+      line-height: 1.45;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(0,0,0,.18);
+      padding: 14px;
+      min-height: 72px;
+      color: var(--text);
+    }
+    .edit-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .editor-panel { display: none; margin-top: 12px; }
+    .editor-panel.open { display: block; }
+    .editor-panel textarea {
+      width: 100%; min-height: 150px; resize: vertical;
+      border: 1px solid var(--border); border-radius: 18px;
+      background: #10170e; color: var(--text);
+      padding: 14px; font: inherit; line-height: 1.45; outline: none;
+    }
+    .editor-panel button { margin-top: 10px; }
+    .firebase-state { color: var(--muted); font-size: 12px; opacity: .8; margin-top: 10px; line-height: 1.35; }
+    details.lesson-times { margin-top: 14px; border: 1px solid var(--border); border-radius: 18px; overflow: hidden; background: rgba(0,0,0,.16); }
+    details.lesson-times summary {
+      list-style: none; cursor: pointer; padding: 14px 16px; font-weight: 900;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    details.lesson-times summary::-webkit-details-marker { display: none; }
+    details.lesson-times summary::after {
+      content: "⌄"; color: var(--danger); font-size: 22px; line-height: 1; transition: transform .18s ease;
+    }
+    details.lesson-times[open] summary::after { transform: rotate(180deg); }
+    .lesson-table { display: grid; gap: 6px; padding: 0 14px 14px; }
+    .lesson-row, .lunch-row {
+      display: grid; grid-template-columns: 70px 1fr; align-items: center; gap: 10px;
+      border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 10px 12px;
+      background: rgba(255,255,255,.035);
+    }
+    .lesson-num { color: var(--danger); font-weight: 900; font-size: 18px; }
+    .lesson-time { font-weight: 800; letter-spacing: .3px; }
+    .lunch-row { grid-template-columns: 1fr; text-align: center; color: var(--danger); font-weight: 900; background: rgba(208,161,93,.10); }
+    @media (max-width: 720px) { .edit-actions { grid-template-columns: 1fr; } }
+
   </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b1a0b">
@@ -214,7 +259,7 @@
         </svg>
       </div>
       <h1>БЗВП НГУ</h1>
-      <p class="subtitle">Календар підготовки: 57 навчальних днів від дати старту без урахування неділь. Натисніть на дату, щоб відкрити графік навчання на цей день.</p>
+      <p class="subtitle">Календар підготовки: 57 навчальних днів від дати старту без урахування неділь. Минулі й майбутні дні підсвічуються окремо.</p>
     </header>
 
     <section class="controls">
@@ -249,26 +294,90 @@
       </div>
     </section>
 
-    <section class="schedule-card" id="scheduleCard">
+
+    <section class="schedule-note" id="scheduleNote">
       <h2>Графік навчання</h2>
-      <div class="schedule-date" id="scheduleDate">Оберіть дату в календарі</div>
-      <div class="schedule-text" id="scheduleText">Натисніть на день, щоб відкрити нотатку з графіком.</div>
-      <div class="schedule-hint">Графік береться з файлу <b>schedule.json</b> у GitHub. Щоб оновити записи для всіх, редагуйте цей файл.</div>
+      <div class="schedule-date" id="noteDate">Оберіть дату</div>
+      <div class="note-box" id="noteText">Натисніть на день у календарі, щоб відкрити нотатку.</div>
+
+      <div class="edit-actions">
+        <button class="secondary" id="editBtn" type="button">Редагувати графік</button>
+        <button class="secondary" id="refreshBtn" type="button">Оновити</button>
+      </div>
+
+      <div class="editor-panel" id="editorPanel">
+        <textarea id="noteEditor" placeholder="Введіть графік на обрану дату..."></textarea>
+        <button id="saveNoteBtn" type="button">Зберегти для всіх</button>
+      </div>
+
+      <details class="lesson-times">
+        <summary>Розклад занять</summary>
+        <div class="lesson-table">
+          <div class="lesson-row"><div class="lesson-num">1.</div><div class="lesson-time">8.50 – 9.35</div></div>
+          <div class="lesson-row"><div class="lesson-num">2.</div><div class="lesson-time">9.45 – 10.30</div></div>
+          <div class="lesson-row"><div class="lesson-num">3.</div><div class="lesson-time">10.40 – 11.25</div></div>
+          <div class="lesson-row"><div class="lesson-num">4.</div><div class="lesson-time">11.35 – 12.20</div></div>
+          <div class="lesson-row"><div class="lesson-num">5.</div><div class="lesson-time">12.30 – 13.15</div></div>
+          <div class="lunch-row">ОБІД</div>
+          <div class="lesson-row"><div class="lesson-num">6.</div><div class="lesson-time">14.35 – 15.20</div></div>
+          <div class="lesson-row"><div class="lesson-num">7.</div><div class="lesson-time">15.30 – 16.15</div></div>
+          <div class="lesson-row"><div class="lesson-num">8.</div><div class="lesson-time">16.25 – 17.10</div></div>
+          <div class="lesson-row"><div class="lesson-num">9.</div><div class="lesson-time">17.20 – 18.05</div></div>
+          <div class="lesson-row"><div class="lesson-num">10.</div><div class="lesson-time">18.15 – 19.00</div></div>
+        </div>
+      </details>
+
+      <div class="firebase-state" id="firebaseState">Firebase: підключення...</div>
     </section>
+
 
     <div class="developer-footer">Developed by Ihor Paderin</div>
   </main>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').catch(function (err) {
+      console.log('Service Worker registration failed:', err);
+    });
+  });
+}
+</script>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getFirestore, collection, doc, onSnapshot, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    const firebaseConfig = {
+      "apiKey": "AIzaSyD5GOWOoYKl6gpPd25mPN3-UpnHxc_B0-s",
+      "authDomain": "bzvp-ngu-calendar.firebaseapp.com",
+      "projectId": "bzvp-ngu-calendar",
+      "storageBucket": "bzvp-ngu-calendar.firebasestorage.app",
+      "messagingSenderId": "220891107970",
+      "appId": "1:220891107970:web:22fd1febd57395425a5a9b"
+};
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
     const DAYS_REQUIRED = 57;
-    const DEFAULT_START = '2026-05-06';
+    const DEFAULT_START = "2026-05-06";
     const $ = (id) => document.getElementById(id);
+
+    const _h = 1549442;
+    const _ok = (v) => {
+      let h = 7;
+      v = String(v || "").trim();
+      for (let i = 0; i < v.length; i++) h = (h * 31 + v.charCodeAt(i)) >>> 0;
+      return h === _h && v.length === 4;
+    };
+
     const state = {
-      view: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+      view: new Date(2026, 4, 1),
       start: localStorage.getItem('bzvpStart') || DEFAULT_START,
       selected: '',
-      schedule: {}
+      admin: localStorage.getItem('bzvpAdmin') === 'true'
     };
+
+    let notes = {};
     $('startDate').value = state.start;
 
     function toISO(date) {
@@ -314,13 +423,24 @@
       $('finishText').textContent = formatDate(finish);
       $('leftText').textContent = left === null ? '—' : `${left} дн.`;
     }
-    function openSchedule(iso) {
+    function renderNote() {
+      if (!state.selected) {
+        $('noteDate').textContent = 'Оберіть дату';
+        $('noteText').textContent = 'Натисніть на день у календарі, щоб відкрити нотатку.';
+        $('noteEditor').value = '';
+        return;
+      }
+      const date = fromISO(state.selected);
+      const text = notes[state.selected] || '';
+      $('noteDate').textContent = formatLongDate(date);
+      $('noteText').textContent = text || 'Графік на цей день ще не додано.';
+      $('noteEditor').value = text;
+    }
+    function openNote(iso) {
       state.selected = iso;
-      const date = fromISO(iso);
-      $('scheduleDate').textContent = formatLongDate(date);
-      $('scheduleText').textContent = state.schedule[iso] || 'Графік на цей день ще не додано.';
+      renderNote();
       renderCalendar();
-      $('scheduleCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      $('scheduleNote').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     function renderCalendar() {
       const box = $('days'); box.innerHTML = '';
@@ -343,16 +463,16 @@
         cell.className = 'day';
         if (isSunday(date)) cell.classList.add('sunday');
         if (sameDay(date, today)) cell.classList.add('today');
+        if (state.selected === iso) cell.classList.add('selected-day');
+        if (notes[iso]) cell.classList.add('has-note');
         if (trainingSet.has(iso)) {
           if (date < today) cell.classList.add('past-training');
           else cell.classList.add('future-training');
         }
-        if (state.schedule[iso]) cell.classList.add('has-note');
-        if (state.selected === iso) cell.classList.add('selected');
         if (start && sameDay(date, start)) { cell.classList.add('start'); cell.dataset.badge = 'СТАРТ'; }
         if (finish && sameDay(date, finish)) { cell.classList.add('finish'); cell.dataset.badge = 'ФІНІШ'; }
         cell.innerHTML = `<span class="num">${dayNum}</span>${trainingSet.has(iso) ? `<span class="count">день ${trainingSet.get(iso)}/${DAYS_REQUIRED}</span>` : '<span class="count"></span>'}`;
-        cell.addEventListener('click', () => openSchedule(iso));
+        cell.addEventListener('click', () => openNote(iso));
         box.appendChild(cell);
       }
       updateStatus();
@@ -362,29 +482,71 @@
       localStorage.setItem('bzvpStart', state.start);
       renderCalendar();
     }
-    async function loadSchedule() {
+    function listenNotes() {
+      onSnapshot(collection(db, "schedule"), (snap) => {
+        notes = {};
+        snap.forEach((item) => {
+          notes[item.id] = item.data().text || "";
+        });
+        $('firebaseState').textContent = 'Firebase: синхронізовано';
+        renderCalendar();
+        renderNote();
+      }, (error) => {
+        $('firebaseState').textContent = 'Firebase: немає доступу до бази';
+        console.error(error);
+      });
+    }
+    async function saveSelectedNote() {
+      if (!state.selected) {
+        alert('Спочатку оберіть дату в календарі.');
+        return;
+      }
       try {
-        const res = await fetch(`schedule.json?v=${Date.now()}`, { cache: 'no-store' });
-        if (res.ok) state.schedule = await res.json();
-      } catch (e) {
-        state.schedule = {};
+        await setDoc(doc(db, "schedule", state.selected), {
+          text: $('noteEditor').value.trim(),
+          updatedAt: serverTimestamp()
+        });
+        $('firebaseState').textContent = 'Firebase: запис збережено';
+      } catch (error) {
+        console.error(error);
+        $('firebaseState').textContent = 'Firebase: помилка збереження';
+        alert('Не вдалося зберегти. Перевірте правила Firestore.');
       }
     }
+    function openEditor() {
+      if (!state.admin) {
+        const pin = prompt('Введіть PIN адміністратора:');
+        if (!_ok(pin)) {
+          alert('Невірний PIN.');
+          return;
+        }
+        state.admin = true;
+        localStorage.setItem('bzvpAdmin', 'true');
+      }
+      $('editorPanel').classList.toggle('open');
+      if (state.selected) $('noteEditor').focus();
+    }
+
     $('saveBtn').addEventListener('click', saveStartDate);
     $('startDate').addEventListener('change', saveStartDate);
     $('prevBtn').addEventListener('click', () => { state.view.setMonth(state.view.getMonth() - 1); renderCalendar(); });
     $('nextBtn').addEventListener('click', () => { state.view.setMonth(state.view.getMonth() + 1); renderCalendar(); });
+    $('editBtn').addEventListener('click', openEditor);
+    $('saveNoteBtn').addEventListener('click', saveSelectedNote);
+    $('refreshBtn').addEventListener('click', () => location.reload());
+
     if (!localStorage.getItem('bzvpStart')) localStorage.setItem('bzvpStart', DEFAULT_START);
-    loadSchedule().then(renderCalendar);
+
+    renderCalendar();
+    renderNote();
+    listenNotes();
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js').catch(console.log);
+      });
+    }
   </script>
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js').catch(function (err) {
-      console.log('Service Worker registration failed:', err);
-    });
-  });
-}
-</script>
+
 </body>
 </html>
