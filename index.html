@@ -68,28 +68,6 @@
     .dot.past { background: var(--past); } .dot.sun { background: var(--sunday); } .dot.today { background: var(--danger); }
     .note { margin: 12px 0 0; font-size: 13px; }
 
-
-    .day { cursor: pointer; text-align: left; }
-    .day.has-note::before {
-      content: ""; position: absolute; right: 7px; top: 7px;
-      width: 8px; height: 8px; border-radius: 50%; background: var(--danger);
-      box-shadow: 0 0 0 2px rgba(0,0,0,.25);
-    }
-    .day.selected { outline: 2px solid #f7e39a; outline-offset: 2px; }
-    .schedule-card {
-      border: 1px solid var(--border); background: rgba(27,36,24,.9);
-      border-radius: 24px; padding: 16px; margin-top: 14px;
-      box-shadow: 0 12px 32px rgba(0,0,0,.24);
-    }
-    .schedule-card h2 { margin: 0 0 8px; font-size: 22px; }
-    .schedule-date { color: var(--danger); font-weight: 800; margin-bottom: 8px; }
-    .schedule-text {
-      white-space: pre-wrap; line-height: 1.5; color: var(--text);
-      border: 1px solid var(--border); border-radius: 16px;
-      background: rgba(0,0,0,.18); padding: 13px; min-height: 70px;
-    }
-    .schedule-hint { color: var(--muted); font-size: 12px; line-height: 1.45; margin-top: 10px; }
-
     .developer-footer {
       text-align: center; color: var(--muted); opacity: .55;
       font-size: 12px; padding: 18px 8px 4px; letter-spacing: .2px;
@@ -99,6 +77,31 @@
       .day { border-radius: 11px; padding: 5px; }
       .count { font-size: 9px; }
     }
+  
+    .day { cursor: pointer; }
+    .day.has-note::before {
+      content: ""; position: absolute; top: 6px; right: 6px;
+      width: 9px; height: 9px; border-radius: 50%; background: #d0a15d;
+      box-shadow: 0 0 0 2px rgba(0,0,0,.22);
+    }
+    .schedule-note {
+      margin-top: 14px; border: 1px solid var(--border); background: rgba(27,36,24,.9);
+      border-radius: 24px; padding: 16px; box-shadow: 0 12px 32px rgba(0,0,0,.24);
+    }
+    .schedule-note h2 { margin: 0 0 8px; font-size: 28px; line-height: 1.1; }
+    .schedule-note .date-line { color: #d0a15d; font-weight: 800; margin-bottom: 12px; text-transform: lowercase; }
+    .schedule-note .note-box { white-space: pre-wrap; line-height: 1.45; border: 1px solid var(--border); border-radius: 18px; background: rgba(0,0,0,.18); padding: 14px; min-height: 62px; color: var(--text); }
+    details.lesson-times { margin-top: 14px; border: 1px solid var(--border); background: rgba(0,0,0,.16); border-radius: 20px; overflow: hidden; }
+    details.lesson-times summary { list-style: none; cursor: pointer; padding: 14px 16px; font-weight: 900; color: var(--text); display: flex; align-items: center; justify-content: space-between; }
+    details.lesson-times summary::-webkit-details-marker { display: none; }
+    details.lesson-times summary::after { content: "⌄"; color: #d0a15d; font-size: 22px; line-height: 1; transition: transform .18s ease; }
+    details.lesson-times[open] summary::after { transform: rotate(180deg); }
+    .lesson-table { padding: 0 14px 14px; display: grid; gap: 6px; }
+    .lesson-row, .lunch-row { display: grid; grid-template-columns: 70px 1fr; gap: 10px; align-items: center; border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 10px 12px; background: rgba(255,255,255,.035); }
+    .lesson-num { color: #d0a15d; font-weight: 900; font-size: 18px; }
+    .lesson-time { font-weight: 800; letter-spacing: .4px; }
+    .lunch-row { grid-template-columns: 1fr; text-align: center; color: #d0a15d; font-weight: 900; background: rgba(208,161,93,.10); }
+
   </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b1a0b">
@@ -214,7 +217,7 @@
         </svg>
       </div>
       <h1>БЗВП НГУ</h1>
-      <p class="subtitle">Календар підготовки: 57 навчальних днів від дати старту без урахування неділь. Натисніть на дату, щоб відкрити графік навчання на цей день.</p>
+      <p class="subtitle">Календар підготовки: 57 навчальних днів від дати старту без урахування неділь. Минулі й майбутні дні підсвічуються окремо.</p>
     </header>
 
     <section class="controls">
@@ -249,11 +252,27 @@
       </div>
     </section>
 
-    <section class="schedule-card" id="scheduleCard">
+
+    <section class="schedule-note" id="scheduleNote">
       <h2>Графік навчання</h2>
-      <div class="schedule-date" id="scheduleDate">Оберіть дату в календарі</div>
-      <div class="schedule-text" id="scheduleText">Натисніть на день, щоб відкрити нотатку з графіком.</div>
-      <div class="schedule-hint">Графік береться з файлу <b>schedule.json</b> у GitHub. Щоб оновити записи для всіх, редагуйте цей файл.</div>
+      <div class="date-line" id="noteDate">Оберіть дату</div>
+      <div class="note-box" id="noteText">Натисніть на день у календарі, щоб відкрити нотатку.</div>
+      <details class="lesson-times">
+        <summary>Розклад занять</summary>
+        <div class="lesson-table">
+          <div class="lesson-row"><div class="lesson-num">1.</div><div class="lesson-time">8.50 – 9.35</div></div>
+          <div class="lesson-row"><div class="lesson-num">2.</div><div class="lesson-time">9.45 – 10.30</div></div>
+          <div class="lesson-row"><div class="lesson-num">3.</div><div class="lesson-time">10.40 – 11.25</div></div>
+          <div class="lesson-row"><div class="lesson-num">4.</div><div class="lesson-time">11.35 – 12.20</div></div>
+          <div class="lesson-row"><div class="lesson-num">5.</div><div class="lesson-time">12.30 – 13.15</div></div>
+          <div class="lunch-row">ОБІД</div>
+          <div class="lesson-row"><div class="lesson-num">6.</div><div class="lesson-time">14.35 – 15.20</div></div>
+          <div class="lesson-row"><div class="lesson-num">7.</div><div class="lesson-time">15.30 – 16.15</div></div>
+          <div class="lesson-row"><div class="lesson-num">8.</div><div class="lesson-time">16.25 – 17.10</div></div>
+          <div class="lesson-row"><div class="lesson-num">9.</div><div class="lesson-time">17.20 – 18.05</div></div>
+          <div class="lesson-row"><div class="lesson-num">10.</div><div class="lesson-time">18.15 – 19.00</div></div>
+        </div>
+      </details>
     </section>
 
     <div class="developer-footer">Developed by Ihor Paderin</div>
@@ -261,130 +280,25 @@
 
   <script>
     const DAYS_REQUIRED = 57;
-    const DEFAULT_START = '2026-05-06';
     const $ = (id) => document.getElementById(id);
-    const state = {
-      view: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-      start: localStorage.getItem('bzvpStart') || DEFAULT_START,
-      selected: '',
-      schedule: {}
-    };
+    const state = { view: new Date(new Date().getFullYear(), new Date().getMonth(), 1), start: localStorage.getItem('bzvpStart') || '2026-05-06', selected: '' };
+    let schedule = {};
     $('startDate').value = state.start;
-
-    function toISO(date) {
-      return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
-    }
-    function fromISO(iso) {
-      if (!iso) return null;
-      const [y,m,d] = iso.split('-').map(Number);
-      return new Date(y, m - 1, d);
-    }
+    function toISO(date) { return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`; }
+    function fromISO(iso) { if (!iso) return null; const [y,m,d] = iso.split('-').map(Number); return new Date(y, m - 1, d); }
     function sameDay(a,b) { return a && b && toISO(a) === toISO(b); }
     function isSunday(date) { return date.getDay() === 0; }
-    function formatDate(date) {
-      return date ? new Intl.DateTimeFormat('uk-UA', { day:'2-digit', month:'2-digit', year:'numeric' }).format(date) : '—';
-    }
-    function formatLongDate(date) {
-      return new Intl.DateTimeFormat('uk-UA', { weekday:'long', day:'2-digit', month:'long', year:'numeric' }).format(date);
-    }
-    function buildTrainingDays(start) {
-      if (!start) return [];
-      const result = [], current = new Date(start);
-      while (result.length < DAYS_REQUIRED) {
-        if (!isSunday(current)) result.push(new Date(current));
-        current.setDate(current.getDate() + 1);
-      }
-      return result;
-    }
-    function getPlan() {
-      const start = fromISO(state.start);
-      const days = buildTrainingDays(start);
-      return { start, days, finish: days.length ? days[days.length - 1] : null };
-    }
-    function updateStatus() {
-      const { start, days, finish } = getPlan();
-      const today = new Date(); today.setHours(0,0,0,0);
-      let completed = 0;
-      for (const d of days) {
-        const copy = new Date(d); copy.setHours(0,0,0,0);
-        if (copy < today) completed++;
-      }
-      const left = days.length ? Math.max(0, DAYS_REQUIRED - completed) : null;
-      $('startText').textContent = formatDate(start);
-      $('finishText').textContent = formatDate(finish);
-      $('leftText').textContent = left === null ? '—' : `${left} дн.`;
-    }
-    function openSchedule(iso) {
-      state.selected = iso;
-      const date = fromISO(iso);
-      $('scheduleDate').textContent = formatLongDate(date);
-      $('scheduleText').textContent = state.schedule[iso] || 'Графік на цей день ще не додано.';
-      renderCalendar();
-      $('scheduleCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-    function renderCalendar() {
-      const box = $('days'); box.innerHTML = '';
-      const { start, days, finish } = getPlan();
-      const trainingSet = new Map(days.map((d, i) => [toISO(d), i + 1]));
-      const today = new Date(); today.setHours(0,0,0,0);
-      const year = state.view.getFullYear(), month = state.view.getMonth();
-      $('monthTitle').textContent = new Intl.DateTimeFormat('uk-UA', { month:'long', year:'numeric' }).format(state.view);
-      const first = new Date(year, month, 1);
-      const last = new Date(year, month + 1, 0);
-      const mondayOffset = (first.getDay() + 6) % 7;
-      for (let i = 0; i < mondayOffset; i++) {
-        const empty = document.createElement('div'); empty.className = 'day empty'; box.appendChild(empty);
-      }
-      for (let dayNum = 1; dayNum <= last.getDate(); dayNum++) {
-        const date = new Date(year, month, dayNum); date.setHours(0,0,0,0);
-        const iso = toISO(date);
-        const cell = document.createElement('button');
-        cell.type = 'button';
-        cell.className = 'day';
-        if (isSunday(date)) cell.classList.add('sunday');
-        if (sameDay(date, today)) cell.classList.add('today');
-        if (trainingSet.has(iso)) {
-          if (date < today) cell.classList.add('past-training');
-          else cell.classList.add('future-training');
-        }
-        if (state.schedule[iso]) cell.classList.add('has-note');
-        if (state.selected === iso) cell.classList.add('selected');
-        if (start && sameDay(date, start)) { cell.classList.add('start'); cell.dataset.badge = 'СТАРТ'; }
-        if (finish && sameDay(date, finish)) { cell.classList.add('finish'); cell.dataset.badge = 'ФІНІШ'; }
-        cell.innerHTML = `<span class="num">${dayNum}</span>${trainingSet.has(iso) ? `<span class="count">день ${trainingSet.get(iso)}/${DAYS_REQUIRED}</span>` : '<span class="count"></span>'}`;
-        cell.addEventListener('click', () => openSchedule(iso));
-        box.appendChild(cell);
-      }
-      updateStatus();
-    }
-    function saveStartDate() {
-      state.start = $('startDate').value || DEFAULT_START;
-      localStorage.setItem('bzvpStart', state.start);
-      renderCalendar();
-    }
-    async function loadSchedule() {
-      try {
-        const res = await fetch(`schedule.json?v=${Date.now()}`, { cache: 'no-store' });
-        if (res.ok) state.schedule = await res.json();
-      } catch (e) {
-        state.schedule = {};
-      }
-    }
-    $('saveBtn').addEventListener('click', saveStartDate);
-    $('startDate').addEventListener('change', saveStartDate);
-    $('prevBtn').addEventListener('click', () => { state.view.setMonth(state.view.getMonth() - 1); renderCalendar(); });
-    $('nextBtn').addEventListener('click', () => { state.view.setMonth(state.view.getMonth() + 1); renderCalendar(); });
-    if (!localStorage.getItem('bzvpStart')) localStorage.setItem('bzvpStart', DEFAULT_START);
-    loadSchedule().then(renderCalendar);
+    function formatDate(date) { return date ? new Intl.DateTimeFormat('uk-UA', { day:'2-digit', month:'2-digit', year:'numeric' }).format(date) : '—'; }
+    function formatLongDate(date) { return new Intl.DateTimeFormat('uk-UA', { weekday:'long', day:'2-digit', month:'long', year:'numeric' }).format(date); }
+    function buildTrainingDays(start) { if (!start) return []; const result = [], current = new Date(start); while (result.length < DAYS_REQUIRED) { if (!isSunday(current)) result.push(new Date(current)); current.setDate(current.getDate() + 1); } return result; }
+    function getPlan() { const start = fromISO(state.start); const days = buildTrainingDays(start); return { start, days, finish: days.length ? days[days.length - 1] : null }; }
+    function updateStatus() { const { start, days, finish } = getPlan(); const today = new Date(); today.setHours(0,0,0,0); let completed = 0; for (const d of days) { const copy = new Date(d); copy.setHours(0,0,0,0); if (copy < today) completed++; } const left = days.length ? Math.max(0, DAYS_REQUIRED - completed) : null; $('startText').textContent = formatDate(start); $('finishText').textContent = formatDate(finish); $('leftText').textContent = left === null ? '—' : `${left} дн.`; }
+    function openNote(iso) { state.selected = iso; const d = fromISO(iso); $('noteDate').textContent = formatLongDate(d); $('noteText').textContent = schedule[iso] || 'Графік на цей день ще не додано.'; renderCalendar(false); $('scheduleNote').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+    function renderCalendar() { const box = $('days'); box.innerHTML = ''; const { start, days, finish } = getPlan(); const trainingSet = new Map(days.map((d, i) => [toISO(d), i + 1])); const today = new Date(); today.setHours(0,0,0,0); const year = state.view.getFullYear(), month = state.view.getMonth(); $('monthTitle').textContent = new Intl.DateTimeFormat('uk-UA', { month:'long', year:'numeric' }).format(state.view); const first = new Date(year, month, 1); const last = new Date(year, month + 1, 0); const mondayOffset = (first.getDay() + 6) % 7; for (let i = 0; i < mondayOffset; i++) { const empty = document.createElement('div'); empty.className = 'day empty'; box.appendChild(empty); } for (let dayNum = 1; dayNum <= last.getDate(); dayNum++) { const date = new Date(year, month, dayNum); date.setHours(0,0,0,0); const iso = toISO(date); const cell = document.createElement('button'); cell.type = 'button'; cell.className = 'day'; if (isSunday(date)) cell.classList.add('sunday'); if (sameDay(date, today) || state.selected === iso) cell.classList.add('today'); if (schedule[iso]) cell.classList.add('has-note'); if (trainingSet.has(iso)) { if (date < today) cell.classList.add('past-training'); else cell.classList.add('future-training'); } if (start && sameDay(date, start)) { cell.classList.add('start'); cell.dataset.badge = 'СТАРТ'; } if (finish && sameDay(date, finish)) { cell.classList.add('finish'); cell.dataset.badge = 'ФІНІШ'; } cell.innerHTML = `<span class="num">${dayNum}</span>${trainingSet.has(iso) ? `<span class="count">день ${trainingSet.get(iso)}/${DAYS_REQUIRED}</span>` : '<span class="count"></span>'}`; cell.addEventListener('click', () => openNote(iso)); box.appendChild(cell); } updateStatus(); }
+    function saveStartDate() { state.start = $('startDate').value || '2026-05-06'; localStorage.setItem('bzvpStart', state.start); renderCalendar(); }
+    async function loadSchedule() { try { const res = await fetch(`schedule.json?v=${Date.now()}`, { cache: 'no-store' }); if (res.ok) schedule = await res.json(); } catch (e) { schedule = {}; } }
+    $('saveBtn').addEventListener('click', saveStartDate); $('startDate').addEventListener('change', saveStartDate); $('prevBtn').addEventListener('click', () => { state.view.setMonth(state.view.getMonth() - 1); renderCalendar(); }); $('nextBtn').addEventListener('click', () => { state.view.setMonth(state.view.getMonth() + 1); renderCalendar(); }); if (!localStorage.getItem('bzvpStart')) localStorage.setItem('bzvpStart', state.start); loadSchedule().then(renderCalendar);
+    if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('./sw.js').catch(function (err) { console.log('Service Worker registration failed:', err); }); }); }
   </script>
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js').catch(function (err) {
-      console.log('Service Worker registration failed:', err);
-    });
-  });
-}
-</script>
 </body>
 </html>
