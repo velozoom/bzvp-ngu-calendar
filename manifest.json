@@ -1,7 +1,6 @@
 {
   "name": "БЗВП НГУ",
   "short_name": "БЗВП НГУ",
-  "description": "Календар БЗВП НГУ з Firebase-графіком.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
